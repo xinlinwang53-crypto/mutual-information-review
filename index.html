@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An intuitive, interactive review of mutual information—from conditional MI to Fano's inequality.">
+  <meta name="theme-color" content="#081424">
+  <title>Mutual Information — An Intuitive Review</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23081424'/%3E%3Ccircle cx='25' cy='32' r='17' fill='none' stroke='%235ee1c6' stroke-width='7'/%3E%3Ccircle cx='39' cy='32' r='17' fill='none' stroke='%23ffcb6b' stroke-width='7'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Mutual Information home"><span class="brand-mark"><i></i><i></i></span><span>MI / REVIEW</span></a>
+    <nav aria-label="Main navigation">
+      <a href="#intuition">Intuition</a><a href="#ideas">Core ideas</a><a href="#practice">Practice</a>
+    </nav>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme">◐</button>
+  </header>
+
+  <main id="top">
+    <section class="hero section-shell">
+      <div class="eyebrow">Information Theory · Chapter 6.3</div>
+      <h1>How much does one variable<br><em>tell us</em> about another?</h1>
+      <p class="hero-copy">Mutual information is not about whether two values move in the same direction. It asks a deeper question: <strong>after seeing one variable, how much uncertainty about the other disappears?</strong></p>
+      <div class="hero-actions"><a class="button primary" href="#intuition">Build the intuition</a><a class="button ghost" href="#cheatsheet">Jump to cheat sheet</a></div>
+      <div class="hero-equation" aria-label="The central mutual information identity">
+        <span>I(X;Y)</span><b>=</b><span>H(X)</span><b>−</b><span>H(X|Y)</span>
+      </div>
+      <p class="equation-caption">shared information = uncertainty before − uncertainty after</p>
+    </section>
+
+    <section class="section-shell simulator" id="intuition">
+      <div class="section-heading"><span>01 · FEEL IT</span><h2>Turn up the noise. Watch information vanish.</h2><p>Let <b>X</b> be a fair bit. <b>Y</b> copies it, but flips with probability ε.</p></div>
+      <div class="sim-grid">
+        <div class="sim-control">
+          <div class="control-label"><label for="noise">Flip probability ε</label><output id="noise-value">0.10</output></div>
+          <input id="noise" type="range" min="0" max="0.5" value="0.1" step="0.01">
+          <div class="range-labels"><span>perfect copy</span><span>pure noise</span></div>
+          <div class="bit-flow" aria-label="Noisy channel diagram"><span class="bit xbit">X</span><span class="channel"><i id="signal-line"></i><small>noisy channel</small></span><span class="bit ybit">Y</span></div>
+          <p id="sim-explanation" class="sim-explanation" aria-live="polite"></p>
+        </div>
+        <div class="meter-panel">
+          <div class="metric"><div><span>Uncertainty before</span><strong>H(X)</strong></div><output>1.000 bit</output><div class="meter"><i style="width:100%"></i></div></div>
+          <div class="metric secondary"><div><span>Uncertainty left</span><strong>H(X|Y)</strong></div><output id="conditional-output"></output><div class="meter"><i id="conditional-bar"></i></div></div>
+          <div class="metric accent"><div><span>Information gained</span><strong>I(X;Y)</strong></div><output id="mi-output"></output><div class="meter"><i id="mi-bar"></i></div></div>
+          <code id="live-equation"></code>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-shell" id="ideas">
+      <div class="section-heading"><span>02 · CONNECT IT</span><h2>Seven ideas, one storyline.</h2><p>Read these in order. Each idea answers one question left by the previous one.</p></div>
+      <div class="concepts">
+        <article class="concept" data-number="01"><div class="concept-copy"><p class="question">What if I already know something else?</p><h3>Conditional mutual information</h3><p><strong>I(X;Y|Z)</strong> asks how much new information Y gives about X <em>after Z is already known</em>.</p><div class="analogy"><b>House-price example</b><span>Bedrooms may predict price. But after you know square footage, do bedrooms still add much? Conditional MI measures exactly that leftover value.</span></div></div><div class="concept-visual formula-card"><code>I(X;Y|Z)</code><span>= information from Y</span><span>that Z did not already reveal</span></div></article>
+
+        <article class="concept" data-number="02"><div class="concept-copy"><p class="question">Why not just use correlation?</p><h3>MI sees beyond straight lines</h3><p>Pearson correlation looks mainly for linear movement. Mutual information detects any statistical dependence.</p><div class="mini-table"><span></span><b>Correlation</b><b>MI</b><span>Nonlinear relation</span><em>may miss it</em><em>can detect it</em><span>Direction (+ / −)</span><em>yes</em><em>no</em><span>Zero ⇒ independent?</span><em>usually no</em><em>yes</em></div></div><div class="concept-visual parabola"><svg viewBox="0 0 280 210" role="img" aria-label="A parabola with zero linear correlation but strong dependence"><line x1="30" y1="180" x2="260" y2="180"/><line x1="140" y1="18" x2="140" y2="190"/><path d="M45 35 Q140 275 240 35"/><g id="parabola-points"></g></svg><p><b>Y = X²</b><br>correlation can be 0; dependence is perfect.</p></div></article>
+
+        <article class="concept" data-number="03"><div class="concept-copy"><p class="question">Can we compare MI across different problems?</p><h3>Normalized mutual information</h3><p>Raw MI has no universal scale. NMI divides shared information by the maximum that could be shared, producing a score from 0 to 1.</p><div class="analogy"><b>Think percentage, not points</b><span>“8 points” means little without the total. “80%” is comparable.</span></div><details><summary>One important warning</summary><p>There are several NMI formulas. Always check which denominator a library uses before comparing scores.</p></details></div><div class="concept-visual gauge"><div class="gauge-ring"><span>0.72</span><small>NMI</small></div><div class="gauge-labels"><span>independent</span><span>deterministic</span></div></div></article>
+
+        <article class="concept" data-number="04"><div class="concept-copy"><p class="question">How do we estimate MI for real-valued data?</p><h3>Bins, neighbors, and MIC</h3><p>Continuous values do not come with a ready-made probability table. We must estimate it.</p><ul class="plain-list"><li><b>Histogram:</b> easy, but sensitive to bin size and boundaries.</li><li><b>KNN / KSG:</b> estimates local density from nearby points.</li><li><b>MIC:</b> searches many grids for one that captures a relationship.</li></ul></div><div class="concept-visual grids"><div class="grid-choice active"><i></i><span>2 × 2</span></div><div class="grid-choice"><i></i><span>4 × 3</span></div><div class="grid-choice"><i></i><span>8 × 5</span></div><p>Different grids reveal different patterns.</p></div></article>
+
+        <article class="concept" data-number="05"><div class="concept-copy"><p class="question">Can processing create information?</p><h3>Data processing inequality</h3><p>If <strong>X → Y → Z</strong>, then Z is made only from Y. Processing may preserve or discard information about X, but it cannot invent more.</p><div class="key-line">I(X;Z) ≤ I(X;Y)</div></div><div class="concept-visual pipeline"><div><b>Scene X</b><small>the source</small></div><i>→</i><div><b>Photo Y</b><small>observation</small></div><i>→</i><div><b>Thumbnail Z</b><small>processed</small></div><div class="info-drops"><span>information may be lost</span></div></div></article>
+
+        <article class="concept" data-number="06"><div class="concept-copy"><p class="question">Can compression keep everything that matters?</p><h3>Sufficient statistics</h3><p>A statistic <strong>s(D)</strong> is sufficient for a parameter θ when it keeps all the information in dataset D that matters for learning θ.</p><div class="analogy"><b>100 coin flips</b><span>To estimate the coin’s bias, the exact order is irrelevant. “63 heads out of 100” is enough.</span></div><p class="memory-line">A sufficient statistic is <strong>task-specific lossless compression.</strong></p></div><div class="concept-visual compression"><div class="raw-data">H T H H T T H T H H T H T T H H T H T H</div><span>compress for θ</span><div class="summary-data"><strong>100</strong><small>flips</small><strong>63</strong><small>heads</small></div></div></article>
+
+        <article class="concept" data-number="07"><div class="concept-copy"><p class="question">What if the features barely contain the answer?</p><h3>Fano’s inequality</h3><p>If features X contain little information about label Y, no classifier—however clever—can achieve a tiny error rate.</p><div class="analogy"><b>Predict tomorrow’s rain from shoe color</b><span>A powerful model cannot recover information that the feature never contained.</span></div><p>High MI makes good prediction <em>possible</em>, not guaranteed. You still need enough data and a suitable model.</p></div><div class="concept-visual fano"><div class="feature-box"><span>features X</span><small>low I(X;Y)</small></div><div class="locked-arrow">⇢</div><div class="target-box"><span>label Y</span><small>uncertainty remains</small></div><div class="floor">unavoidable error floor</div></div></article>
+      </div>
+    </section>
+
+    <section class="section-shell cheatsheet" id="cheatsheet">
+      <div class="section-heading"><span>03 · REMEMBER IT</span><h2>The one-screen cheat sheet.</h2></div>
+      <div class="cheat-grid">
+        <div><span>Core meaning</span><code>I(X;Y)=H(X)−H(X|Y)</code><p>How much uncertainty about X disappears after seeing Y.</p></div>
+        <div><span>Independence</span><code>I(X;Y)=0 ⇔ X ⟂ Y</code><p>No shared information means statistical independence.</p></div>
+        <div><span>Symmetry</span><code>I(X;Y)=I(Y;X)</code><p>Shared information has no direction.</p></div>
+        <div><span>Conditioning</span><code>I(X;Y|Z)</code><p>Y’s extra value after Z is already known.</p></div>
+        <div><span>Processing</span><code>X→Y→Z ⇒ I(X;Z)≤I(X;Y)</code><p>Processing cannot create information about the source.</p></div>
+        <div><span>Prediction</span><code>low I(X;Y) ⇒ error floor</code><p>No model can extract a signal that is not there.</p></div>
+      </div>
+    </section>
+
+    <section class="section-shell practice" id="practice">
+      <div class="section-heading"><span>04 · TEST IT</span><h2>Can you explain it without the formulas?</h2><p>Choose an answer. Your score updates instantly.</p></div>
+      <form id="quiz">
+        <fieldset data-answer="b"><legend><span>1</span>After house size is known, bedrooms add almost no information about price. What is small?</legend><label><input type="radio" name="q1" value="a"> H(Price)</label><label><input type="radio" name="q1" value="b"> I(Price; Bedrooms | Size)</label><label><input type="radio" name="q1" value="c"> I(Price; Size)</label><p class="feedback"></p></fieldset>
+        <fieldset data-answer="c"><legend><span>2</span>X and Y have zero Pearson correlation. What can you safely conclude?</legend><label><input type="radio" name="q2" value="a"> They are independent</label><label><input type="radio" name="q2" value="b"> Their MI is zero</label><label><input type="radio" name="q2" value="c"> There may still be a nonlinear relationship</label><p class="feedback"></p></fieldset>
+        <fieldset data-answer="a"><legend><span>3</span>A thumbnail Z is made only from photo Y of scene X. Which must be true?</legend><label><input type="radio" name="q3" value="a"> I(X;Z) ≤ I(X;Y)</label><label><input type="radio" name="q3" value="b"> I(X;Z) ≥ I(X;Y)</label><label><input type="radio" name="q3" value="c"> I(X;Z) = 0</label><p class="feedback"></p></fieldset>
+        <fieldset data-answer="b"><legend><span>4</span>Why can’t a huge neural network predict rain from an unrelated feature?</legend><label><input type="radio" name="q4" value="a"> Neural networks only learn linear rules</label><label><input type="radio" name="q4" value="b"> Processing cannot manufacture missing information</label><label><input type="radio" name="q4" value="c"> Mutual information only applies to discrete data</label><p class="feedback"></p></fieldset>
+      </form>
+      <div class="score" id="score" aria-live="polite"><strong>0 / 4</strong><span>Answer all four to check your understanding.</span></div>
+    </section>
+  </main>
+
+  <footer><span>Mutual Information · Intuitive Review</span><span>Based on Kevin P. Murphy, <em>Probabilistic Machine Learning: An Introduction</em>, §6.3</span><a href="#top">Back to top</a></footer>
+</body>
+</html>
